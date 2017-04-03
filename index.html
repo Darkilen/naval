@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Projet SIMPLonMARS3 - Afterwork" />
+    <meta name="author" content="Kevin, Samuel" />
+    <title>WebSocket :D</title>
+  </head>
+  <body>
+    COUCOU
+    <input id="texte" type="text"/>
+    <button id="push">OK</button>
+    <div id="return"><div>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="https://code.jquery.com/jquery-3.2.0.min.js"></script>
+        <script>
+var socket = io.connect('http://147.94.33.115:8080');
+// On demande le pseudo au visiteur...
+var pseudo = prompt('Quel est votre pseudo ?');
+// Et on l'envoie avec le signal "petit_nouveau" (pour le différencier de "message")
+socket.emit('petit_nouveau', pseudo);
+socket.on('message', function(message) {
+  console.log('Le serveur a un message pour vous : ' + message);
+});
+socket.on('newMessage', function(message) {
+  $('#return').append(message+"\n<br>");
+});
+$('#push').click(function(){
+  socket.emit('message', $('#texte').val());
+    $('#return').append(pseudo+ ": "+$('#texte').val()+"\n<br/>");
+});
+$('#texte').on('keydown', gererEchap);
+$('#texte').on('keyup', enleverModalEchap);
+
+function gererEchap(e) {
+  if(e.keyCode==13) {
+    EscKeyPressed = true;
+  }
+}
+function enleverModalEchap(e) {
+  if(e.keyCode==13) {
+    if(EscKeyPressed) {
+      EscKeyPressed = false;
+      socket.emit('message', $('#texte').val());
+      $('#return').append(pseudo+": "+$('#texte').val()+"\n<br/>");
+    }
+  }
+}
+    </script>
+  </body>
+</html>
